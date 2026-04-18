@@ -1,11 +1,15 @@
 import { google } from "googleapis";
 
 export default async function handler(req, res) {
-  // ✅ CORS (important for GitHub Pages)
+  // ✅ Always set CORS FIRST
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET");
 
   try {
+    if (!process.env.GOOGLE_SERVICE_ACCOUNT) {
+      throw new Error("Missing GOOGLE_SERVICE_ACCOUNT env variable");
+    }
+
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
 
     const auth = new google.auth.GoogleAuth({
@@ -15,7 +19,6 @@ export default async function handler(req, res) {
 
     const drive = google.drive({ version: "v3", auth });
 
-    // ✅ Your folder ID (fixed)
     const folderId = "1YITLhxtuu8mh4HlBGEe8XlIp-XuctbCq";
 
     const response = await drive.files.list({
@@ -24,7 +27,13 @@ export default async function handler(req, res) {
     });
 
     res.status(200).json(response.data.files);
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+
+    // ✅ Return error properly (important for debugging)
+    res.status(500).json({
+      error: err.message,
+    });
   }
 }
