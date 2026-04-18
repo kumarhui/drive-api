@@ -2,13 +2,96 @@
 <html>
 <head>
   <title>Drive Explorer</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    #backBtn {
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      border: none;
+      background: #4a6cf7;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #backBtn:hover {
+      background: #3b57d1;
+    }
+
+    /* GRID */
+    #list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .icon {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    /* LOADER */
+    #loader {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ddd;
+      border-top: 4px solid #4a6cf7;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+  </style>
 </head>
+
 <body>
-  <h2>Drive Explorer</h2>
 
-  <button onclick="goBack()">⬅ Back</button>
+  <h2>📁 Drive Explorer</h2>
 
-  <ul id="list">Loading...</ul>
+  <button id="backBtn" onclick="goBack()">⬅ Back</button>
+
+  <div id="loader">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <div id="list"></div>
 
   <script>
     const API_URL = "https://drive-api-git-main-shivamwallah.vercel.app/api/files";
@@ -16,6 +99,11 @@
     let historyStack = [];
 
     async function loadFiles(folderId = "1YITLhxtuu8mh4HlBGEe8XlIp-XuctbCq") {
+
+      // 🔄 show loader
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("list").innerHTML = "";
+
       try {
         const res = await fetch(API_URL + "?folderId=" + folderId);
         const data = await res.json();
@@ -24,30 +112,41 @@
         list.innerHTML = "";
 
         data.forEach(file => {
-          const li = document.createElement("li");
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const icon = document.createElement("div");
+          icon.className = "icon";
+
+          const name = document.createElement("div");
+          name.textContent = file.name;
 
           // 📂 Folder
           if (file.mimeType === "application/vnd.google-apps.folder") {
-            li.textContent = "📂 " + file.name;
-            li.style.cursor = "pointer";
+            icon.textContent = "📂";
 
-            li.onclick = () => {
+            card.onclick = () => {
               historyStack.push(folderId);
               loadFiles(file.id);
             };
           }
           // 📄 File
           else {
-            li.textContent = "📄 " + file.name;
+            icon.textContent = "📄";
           }
 
-          list.appendChild(li);
+          card.appendChild(icon);
+          card.appendChild(name);
+          list.appendChild(card);
         });
 
       } catch (err) {
         console.error(err);
-        document.getElementById("list").innerHTML = "Error loading files";
+        document.getElementById("list").innerHTML = "❌ Error loading files";
       }
+
+      // 🔄 hide loader
+      document.getElementById("loader").style.display = "none";
     }
 
     function goBack() {
@@ -57,8 +156,8 @@
       }
     }
 
-    // ✅ initial load
     loadFiles();
   </script>
+
 </body>
 </html>
