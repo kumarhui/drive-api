@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Drive Explorer</title>
+  <title>Drive Files</title>
 </head>
 <body>
-  <h2>Drive Files</h2>
-
-  <input id="folderId" placeholder="Enter Folder ID" />
+  <h2>My Drive Files</h2>
   <button onclick="loadFiles()">Load Files</button>
 
   <ul id="list"></ul>
 
   <script>
     async function loadFiles() {
-      const folderId = document.getElementById("folderId").value;
-
-      const res = await fetch(`/api/files?folderId=${folderId}`);
+      const res = await fetch('/api/files');
       const data = await res.json();
 
       const list = document.getElementById("list");
