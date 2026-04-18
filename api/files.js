@@ -11,11 +11,7 @@ export default async function handler(req, res) {
 
     const drive = google.drive({ version: "v3", auth });
 
-    const folderId = req.query.folderId;
-
-    if (!folderId) {
-      return res.status(400).json({ error: "Folder ID is required" });
-    }
+    const folderId = "1YITLhxtuu8mh4HlBGEe8XlIp-XuctbCq";
 
     const response = await drive.files.list({
       q: `'${folderId}' in parents`,
