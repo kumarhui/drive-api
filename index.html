@@ -10,17 +10,24 @@
 
   <script>
     async function loadFiles() {
-      const res = await fetch('/api/files');
-      const data = await res.json();
+      try {
+        const res = await fetch("https://YOUR_VERCEL_URL/api/files");
 
-      const list = document.getElementById("list");
-      list.innerHTML = "";
+        const data = await res.json();
 
-      data.forEach(file => {
-        const li = document.createElement("li");
-        li.textContent = file.name + " (" + file.mimeType + ")";
-        list.appendChild(li);
-      });
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.forEach(file => {
+          const li = document.createElement("li");
+          li.textContent = file.name + " (" + file.mimeType + ")";
+          list.appendChild(li);
+        });
+
+      } catch (err) {
+        document.getElementById("list").innerHTML = "Error loading files";
+        console.error(err);
+      }
     }
 
     // ✅ Auto load on page open
