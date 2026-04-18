@@ -1,6 +1,10 @@
 import { google } from "googleapis";
 
 export default async function handler(req, res) {
+  // ✅ CORS (important for GitHub Pages)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET");
+
   try {
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
 
@@ -11,6 +15,7 @@ export default async function handler(req, res) {
 
     const drive = google.drive({ version: "v3", auth });
 
+    // ✅ Your folder ID (fixed)
     const folderId = "1YITLhxtuu8mh4HlBGEe8XlIp-XuctbCq";
 
     const response = await drive.files.list({
