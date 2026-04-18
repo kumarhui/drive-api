@@ -5,9 +5,8 @@
 </head>
 <body>
   <h2>My Drive Files</h2>
-  <button onclick="loadFiles()">Load Files</button>
 
-  <ul id="list"></ul>
+  <ul id="list">Loading...</ul>
 
   <script>
     async function loadFiles() {
@@ -23,6 +22,9 @@
         list.appendChild(li);
       });
     }
+
+    // ✅ Auto load on page open
+    loadFiles();
   </script>
 </body>
 </html>
