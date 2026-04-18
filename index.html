@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Drive Explorer</title>
+</head>
+<body>
+  <h2>Drive Files</h2>
+
+  <input id="folderId" placeholder="Enter Folder ID" />
+  <button onclick="loadFiles()">Load Files</button>
+
+  <ul id="list"></ul>
+
+  <script>
+    async function loadFiles() {
+      const folderId = document.getElementById("folderId").value;
+
+      const res = await fetch(`/api/files?folderId=${folderId}`);
+      const data = await res.json();
+
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      data.forEach(file => {
+        const li = document.createElement("li");
+        li.textContent = file.name + " (" + file.mimeType + ")";
+        list.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
