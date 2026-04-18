@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Drive Files</title>
+  <title>Drive Explorer</title>
 </head>
 <body>
-  <h2>My Drive Files</h2>
+  <h2>Drive Explorer</h2>
+
+  <button onclick="goBack()">⬅ Back</button>
 
   <ul id="list">Loading...</ul>
 
   <script>
-    async function loadFiles() {
+    const API_URL = "https://drive-api-git-main-shivamwallah.vercel.app/api/files";
+
+    let historyStack = [];
+
+    async function loadFiles(folderId = "1YITLhxtuu8mh4HlBGEe8XlIp-XuctbCq") {
       try {
-        // ✅ PUT YOUR REAL VERCEL URL HERE
-        const res = await fetch("https://drive-api-git-main-shivamwallah.vercel.app/api/files");
-
-        if (!res.ok) {
-          throw new Error("HTTP error " + res.status);
-        }
-
+        const res = await fetch(API_URL + "?folderId=" + folderId);
         const data = await res.json();
 
         const list = document.getElementById("list");
@@ -26,10 +26,18 @@
         data.forEach(file => {
           const li = document.createElement("li");
 
-          // 📂 show folder icon
+          // 📂 Folder
           if (file.mimeType === "application/vnd.google-apps.folder") {
             li.textContent = "📂 " + file.name;
-          } else {
+            li.style.cursor = "pointer";
+
+            li.onclick = () => {
+              historyStack.push(folderId);
+              loadFiles(file.id);
+            };
+          }
+          // 📄 File
+          else {
             li.textContent = "📄 " + file.name;
           }
 
@@ -38,11 +46,18 @@
 
       } catch (err) {
         console.error(err);
-        document.getElementById("list").innerHTML =
-          "❌ Error: " + err.message;
+        document.getElementById("list").innerHTML = "Error loading files";
       }
     }
 
+    function goBack() {
+      if (historyStack.length > 0) {
+        const prev = historyStack.pop();
+        loadFiles(prev);
+      }
+    }
+
+    // ✅ initial load
     loadFiles();
   </script>
 </body>
